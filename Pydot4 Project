@@ -1,0 +1,53 @@
+from bs4 import BeautifulSoup
+import requests
+import json
+import re
+header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36', 'Referer': 'http://whateveritis.com'}  #header to spoof as a browser
+
+f = open('interest_rates.csv','w') #opening a csv file(where data will be saved) in write mode 
+urls = ['http://singapurafinance.com.sg/mobile/index.php#interest_rate','http://www.sif.com.sg/deposits/?i=fixed','http://www.hlf.com.sg/personal/tools/fixed-deposits-calculator.php#fixed_deposits_interest_rates']  #the urls to be scraped
+res = requests.get(urls[0],headers= header) #sending a request to the website for the html page with header
+soup = BeautifulSoup(res.text,'html.parser') #converting the html to BeautifulSoup object (res.text gives html page text)
+
+table = soup.find_all('div',style='width:100%')[1]   # Now in the html page we are trying to find the <div> tag which has style='width:100%' (as there are number of such tags we find all the tags and retrieve the needed one i.e the 2nd tag )
+f.write('singapurafinance fixed deposit interest rates\n') #writing to csv file
+heading = table.find('div','table-header') #finding the <div> tag with class name as table-header
+for col in heading.find_all('div'): #iterating through all the <div> tags present inside parent <div> tag
+	f.write('"'+col.text+'",') #col.text returns the text present in between the tag. Eg:<div>abc</div> returns abc
+f.write('\n') 
+rows = table.find_all('div','table-row') ##finding all the <div> tag with class name as table-row
+for row in rows: #iterating each row 
+	cols = row.find_all('div') #finding all the <div> tags inside the parent <div> tag i.e row <div> tag
+	for col in cols: #iterating the <div> tags
+		f.write('"'+col.text+'",') ##col.text returns the text present in between the tag. Eg:<div>abc</div> returns abc
+	f.write('\n')
+f.write('\n\n\n')
+
+f.write('sif fixed deposit interest rates\n')
+f.write('"Tenor","less than $50,000","$50,000 and above"\n')
+res = requests.get(urls[1],headers= header) 
+soup = BeautifulSoup(res.text,'html.parser')
+rows = soup.find_all('tr')[2:] #finding all the <tr> tags and excluding the 1st two unnecessary using [2:](slice) operator
+for row in rows: #iterating through <tr> tags
+	cols = row.find_all('td') #findig all the <td> tags in parent <tr> tag
+	for col in cols: #iterating through <td> tags
+		f.write('"'+col.text.encode('ascii','ignore')+'",') #here we are encoding the text and ignoring erros as the text contains some other non-ascii characters
+	f.write('\n')
+f.write('\n\n\n')
+f.write('hlf fixed deposit interest rates\n')
+
+res = requests.get(urls[2],headers= header)
+soup = BeautifulSoup(res.text,'html.parser')
+
+#Scraping this page is a bit different the data is present inside the <script> tag i.e the data is embedded inside javascript variable and not the html page
+script = soup.find_all('script')[3] #we are finding the script tag in which the data is present. as there are lot of script tags, we find all the tags and select required tag ie 4th
+f.write('month,Upto 50k,Between 50k To 100k,Between 100k To 1m\n')
+pattern = re.compile(r'var\sconfig=(.*?);') #We are using a regular expression to match the variable present inside the script tag
+
+if pattern.search(script.text.replace('\n','')): #if pattern matches
+    data = pattern.search(script.text.replace('\n',''))  #storing the pattenr in a variable
+    interest = json.loads(data.groups()[0]) #here we are grouping the pattern and finding the required text and using  json.loads to convert the string into a python dictionary
+    for records in interest['rates']: #iterating each record in the rates 
+    	f.write(str(records['month'])+','+str(records['upTo50k']['rate'])+','+str(records['between50kTo100k']['specialRate'])+','+str(records['between100kTo1m']['specialRate'])+'\n') #findig all the values in the dictionary for each record
+f.close() #closing the file
+
