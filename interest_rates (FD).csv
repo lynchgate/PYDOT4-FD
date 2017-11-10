@@ -1,0 +1,32 @@
+singapurafinance fixed deposit interest rates,,
+Tenure,"Interest Rates(%p.a.) Less than $50,000.00","Interest Rates(%p.a.) $50,000.00 and above"
+1 - 2 months,0.30%,0.35%
+3 - 5 months,0.50%,0.60%
+6 - 8 months,0.60%,0.75%
+9 - 11 months,0.60%,0.75%
+12 months,0.60%,0.75%
+15 months,0.70%,0.75%
+18 months,0.70%,0.88%
+21 months,0.70%,0.88%
+24 months,0.70%,0.93%
+"27, 30, 33 months",0.70%,0.93%
+36 months,0.70%,1.00%
+"39, 42,45 months",0.70%,1.00%
+48 months,0.70%,1.00%
+"51, 54, 57 months",0.70%,1.00%
+60 months,0.70%,1.00%
+,,
+,,
+,,
+sif fixed deposit interest rates,,
+Tenor,"less than $50,000","$50,000 and above"
+1 month,0.1250%p.a.,0.3000%p.a.
+3 months,0.2500%p.a.,0.6000%p.a.
+6 months,0.3000%p.a.,0.7500%p.a.
+9 months,0.4000%p.a.,0.8000%p.a.
+12 months,0.4500%p.a.,0.8750%p.a.
+15 months,0.5000%p.a.,0.9000%p.a.
+24 months,0.7000%p.a.,1.0000%p.a.
+36 months,0.7000%p.a.,1.2000%p.a.
+48 months,0.7000%p.a.,1.2000%p.a.
+60 months,0.7000%p.a.,1.2000%p.a.
